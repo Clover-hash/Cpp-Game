@@ -8,35 +8,47 @@ Puzzle 2: Need to go different locations to change the value to open or allow ac
 
 
 #include <iostream>
+#include <sstream>
+#include <string>
+#include <cstdlib>
 
 using namespace std;
 
 int CurrPos=0;
 int* CurrPointer=&CurrPos;
 void Move(int* AddressToGo);
+int* ConvertStringToAddress(string TextAddress);
+
 int main(){
     int a=0;
     int b=1;
+    CurrPointer=&a;
+    cout<<"You at: "<<CurrPointer<<endl;
     int Puzzle1[2]={a,b};
     cout<<"Where would you like to go?"<<endl;
     cout<<"You can currently go :"<<endl;
-    cout<<&a;
-    cout<<&b;
-    cout<<"Enter the address you would like to go to: ";
+    cout<<&a<<endl;
+    cout<<&b<<endl;
+    cout<<"Enter the address you would like to go to: "<<endl;
     string AddressInput;
     cin >> AddressInput;
-
-    Move(AddressInput);
+    Move(ConvertStringToAddress(AddressInput));
     return 0;
 }
 
 int* ConvertStringToAddress(string TextAddress){
-    
+    uintptr_t addr;
+    stringstream ss;
+    ss<<hex<<TextAddress;
+    ss>>addr;
+    int* address = reinterpret_cast<int*>(addr);
+    return address;
 }
+
 void Move(int* AddressToGo){
-    cout<<CurrPointer<<endl;
+    cout<<"You were at: "<<CurrPointer<<endl;
     CurrPointer=AddressToGo;
-    cout<<CurrPointer<<endl;
+    cout<<"You are now at: "<<CurrPointer<<endl;
     cout<<CurrPos<<endl;
     CurrPos=*CurrPointer;
     cout<<CurrPos;
