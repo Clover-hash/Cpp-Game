@@ -11,31 +11,50 @@ Puzzle 2: Need to go different locations to change the value to open or allow ac
 #include <sstream>
 #include <string>
 #include <cstdlib>
+#include <array>
+
 
 using namespace std;
 
-int CurrPos=0;
+int CurrPos=10;
 int* CurrPointer=&CurrPos;
 void Move(int* AddressToGo);
 int* ConvertStringToAddress(string TextAddress);
-void Puzzle1();
+int* DisplayMoves(array<int*,4> moves);
+array<array<int,3>,3> Puzzle1();
+array<int*,4> CheckAvailableMoves(int* CurrPos,array<array<int*,3>,3> arr);
 
 int main(){
+
+    //initialize the array and the pointer============================
     int a=0;
     int b=1;
-    CurrPointer=&a;
-    // cout<<"You at: "<<CurrPointer<<endl;
-    // int Puzzle1[2]={a,b};
-    // cout<<"Where would you like to go?"<<endl;
-    // cout<<"You can currently go :"<<endl;
-    // cout<<&a<<endl;
-    // cout<<&b<<endl;
-    // cout<<"Enter the address you would like to go to: "<<endl;
-    // string AddressInput;
-    // cin >> AddressInput;
-    // Move(ConvertStringToAddress(AddressInput));
-    Puzzle1();
+    CurrPointer=&CurrPos;
+    cout<<"You at: "<<CurrPointer<<endl;
+    array<array<int,3>,3> arr = Puzzle1();
+    //================================================================
+
+
+    //display the array=============
+    cout<<"Where would you like to go?"<<endl;
+    cout<<"You can currently go :"<<endl;
+    CurrPointer=&arr[0][0];
+    CurrPos=*CurrPointer;
+    array<array<int*,3>,3> arrAdressess;
+    for (int I=0; I<3; I++){
+        for (int J=0; J<3; J++){
+            cout<<"Location of " <<arr[I][J]<<" : "<<&arr[I][J]<<" \n";
+            arrAdressess[I][J]=&arr[I][J];
+        }
+        cout<<endl;
+    }
+
+    //=============================
+
+    int* AddressInput=DisplayMoves(CheckAvailableMoves(CurrPointer,arrAdressess));
+    Move(AddressInput);
     return 0;
+
 }
 
 int* ConvertStringToAddress(string TextAddress){
@@ -56,18 +75,77 @@ void Move(int* AddressToGo){
     cout<<CurrPos;
 }
 
-void Puzzle1(){
-    int arr[3][3]=
-    {
-        {3,3,2},
-        {3,2,1},
+array<array<int,3>,3> Puzzle1() {
+    return     {{
+        {4,3,2},
+        {3,2,1},    
         {2,1,0},
-    };
+    }};
+}
 
-    for (int I=0; I<3; I++){
-        for (int J=0; J<3; J++){
-            cout<<"Location of " <<arr[I][J]<<" : "<<&arr[I][J]<<" \n";
-        }
-        cout<<endl;
+int* DisplayMoves(array<int*,4> moves){
+    int* upcoords=moves[0];
+    int* downcoords=moves[1];
+    int* leftcoords=moves[2];
+    int* rightcoords=moves[3];
+    string move;
+    cout<<"======================="<<endl;
+    cout<<"MOVES :"<<endl;
+    cout<<"            ^            "<<endl;
+    cout<<"         "<<upcoords<<endl;
+    cout<<" "<<endl;
+    cout<<"<                       >"<<endl; 
+    cout<<leftcoords<<"    "<<CurrPointer<<"    "<<rightcoords<<endl;
+    cout<<" "<<endl;
+    cout<<"            v            "<<endl;
+    cout<<"         "<<downcoords<<endl;
+    cout<<" "<<endl;
+    cout<<"======================="<<endl;
+    cout<<"What move will you play? : "<<endl;
+    cin>>move;
+
+
+    if (move=="up"|| move=="UP"|| move=="Up"){
+        return upcoords;
+    }else if (move=="down"|| move=="DOWN"|| move=="Down"){
+        return downcoords;
+    }else if (move=="left"|| move=="LEFT"|| move=="Left"||move=="l"|| move=="L"){
+        return leftcoords;
+    }else if (move=="right"|| move=="RIGHT"|| move=="Right"||move=="r"|| move=="R"){
+        return rightcoords;
+    }else{
+        cout<<"Invalid move"<<endl;
+        return nullptr;
     }
+}
+
+array<int*,4> CheckAvailableMoves(int* CurrPos,array<array<int*,3>,3> arr){
+    int* up;
+    int* down;
+    int* left;
+    int* right;
+    up,down,left,right=nullptr;
+
+    array <int*,4> moves; //0=up,1=down,2=left,3=right
+    
+    for (int i=0;i<3;i++){
+        for (int j=0;j<3;j++){
+            if (arr[i][j]==CurrPos){     //find the current position of the player
+                //check what moves they can make
+                int t=0;
+                while(t<3){
+                    try{
+                        moves[0]=arr[i-1][j]; //up
+                        moves[1]=arr[i+1][j]; //down
+                        moves[2]=arr[i][j-1]; //left
+                        moves[3]=arr[i][j+1]; //right
+                    }catch (out_of_range& e){
+                        e.what();
+                    }
+                    t=t+1;
+                }
+            }
+        }
+    }
+    return moves;
 }
