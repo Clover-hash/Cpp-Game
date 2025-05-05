@@ -16,44 +16,59 @@ Puzzle 2: Need to go different locations to change the value to open or allow ac
 
 using namespace std;
 
-int CurrPos=10;
+int CurrPos=0;
 int* CurrPointer=&CurrPos;
 void Move(int* AddressToGo);
 int* ConvertStringToAddress(string TextAddress);
 int* DisplayMoves(array<int*,4> moves);
-array<array<int,3>,3> Puzzle1();
+array<array<int,3>,3> PuzzleGenerator();
 array<int*,4> CheckAvailableMoves(int* CurrPos,array<array<int*,3>,3> arr);
+
+
 
 int main(){
 
+
+
     //initialize the array and the pointer============================
-    int a=0;
-    int b=1;
-    CurrPointer=&CurrPos;
     cout<<"You at: "<<CurrPointer<<endl;
-    array<array<int,3>,3> arr = Puzzle1();
+    array<array<int,3>,3> arr = PuzzleGenerator();
+    CurrPointer=&arr[0][0];
     //================================================================
 
+    int i = 0;
+    while (true){
+        //display the array=============
+        cout<<"Where would you like to go?"<<endl;
+        cout<<"You can currently go :"<<endl;
+        array<array<int*,3>,3> arrAdressess;
 
-    //display the array=============
-    cout<<"Where would you like to go?"<<endl;
-    cout<<"You can currently go :"<<endl;
-    CurrPointer=&arr[0][0];
-    CurrPos=*CurrPointer;
-    array<array<int*,3>,3> arrAdressess;
-    for (int I=0; I<3; I++){
-        for (int J=0; J<3; J++){
-            cout<<"Location of " <<arr[I][J]<<" : "<<&arr[I][J]<<" \n";
-            arrAdressess[I][J]=&arr[I][J];
+
+        cout<<"======================="<<endl;   
+        for (int I=0; I<3; I++){
+            for (int J=0; J<3; J++){
+
+                // for debugging purposes
+                //cout<<"Location of " <<arr[I][J]<<" : "<<&arr[I][J]<<" \n";
+                //========================
+
+                arrAdressess[I][J]=&arr[I][J];
+            }
         }
-        cout<<endl;
+        CurrPos=*CurrPointer;
+
+        //=============================
+
+        int* AddressInput=DisplayMoves(CheckAvailableMoves(CurrPointer,arrAdressess));
+        Move(AddressInput);
+        CurrPointer=AddressInput;
+        if (CurrPos==0){
+            cout<<"You escaped!"<<endl;
+            break;}
+
     }
-
-    //=============================
-
-    int* AddressInput=DisplayMoves(CheckAvailableMoves(CurrPointer,arrAdressess));
-    Move(AddressInput);
     return 0;
+
 
 }
 
@@ -70,12 +85,15 @@ void Move(int* AddressToGo){
     cout<<"You were at: "<<CurrPointer<<endl;
     CurrPointer=AddressToGo;
     cout<<"You are now at: "<<CurrPointer<<endl;
-    cout<<CurrPos<<endl;
+    cout<<"================================================="<<endl;
+    cout<<"You were "<<CurrPos<<" moves away from reaching"<<endl;
+    cout<<"================================================="<<endl;
     CurrPos=*CurrPointer;
-    cout<<CurrPos;
+    cout<<"You are "<<CurrPos<<" moves away from reaching"<<endl;
+    cout<<"================================================="<<endl;
 }
 
-array<array<int,3>,3> Puzzle1() {
+array<array<int,3>,3> PuzzleGenerator() {
     return     {{
         {4,3,2},
         {3,2,1},    
@@ -88,6 +106,27 @@ int* DisplayMoves(array<int*,4> moves){
     int* downcoords=moves[1];
     int* leftcoords=moves[2];
     int* rightcoords=moves[3];
+    if (upcoords==nullptr||downcoords==nullptr||leftcoords==nullptr||rightcoords==nullptr){
+        if(upcoords!=nullptr){
+            cout<<"up"<<endl;
+        }
+        if(downcoords!=nullptr){
+            cout<<"down"<<endl;
+        }
+        if(leftcoords!=nullptr){
+            cout<<"left"<<endl;
+        }
+        if (rightcoords!=nullptr){
+            cout<<"right"<<endl;
+        }
+    }else{
+        cout<<"up"<<endl;
+        cout<<"down"<<endl;
+        cout<<"left"<<endl;
+        cout<<"right"<<endl;
+    }
+        
+    
     string move;
     cout<<"======================="<<endl;
     cout<<"MOVES :"<<endl;
@@ -95,7 +134,7 @@ int* DisplayMoves(array<int*,4> moves){
     cout<<"         "<<upcoords<<endl;
     cout<<" "<<endl;
     cout<<"<                       >"<<endl; 
-    cout<<leftcoords<<"    "<<CurrPointer<<"    "<<rightcoords<<endl;
+    cout<<leftcoords<<"        "<<CurrPointer<<"    "<<rightcoords<<endl;
     cout<<" "<<endl;
     cout<<"            v            "<<endl;
     cout<<"         "<<downcoords<<endl;
@@ -120,20 +159,15 @@ int* DisplayMoves(array<int*,4> moves){
 }
 
 array<int*,4> CheckAvailableMoves(int* CurrPos,array<array<int*,3>,3> arr){
-    int* up;
-    int* down;
-    int* left;
-    int* right;
-    up,down,left,right=nullptr;
-
     array <int*,4> moves; //0=up,1=down,2=left,3=right
     
     for (int i=0;i<3;i++){
         for (int j=0;j<3;j++){
             if (arr[i][j]==CurrPos){     //find the current position of the player
+
                 //check what moves they can make
                 int t=0;
-                while(t<3){
+                while(t<=5){
                     try{
                         moves[0]=arr[i-1][j]; //up
                         moves[1]=arr[i+1][j]; //down
@@ -141,8 +175,43 @@ array<int*,4> CheckAvailableMoves(int* CurrPos,array<array<int*,3>,3> arr){
                         moves[3]=arr[i][j+1]; //right
                     }catch (out_of_range& e){
                         e.what();
+                        //catch the out of range error and set the move to nullptr
+                        if (t==0){
+                            moves[0]=nullptr; //up
+                        }
+                        else if (t==1){
+                            moves[1]=nullptr; //down
+                        }
+                        else if (t==2){
+                            moves[2]=nullptr; //left
+                        }
+                        else if (t==3){
+                            moves[3]=nullptr; //right
+                        }
+                        
                     }
                     t=t+1;
+                }
+                //check if the moves are valid and set them to nullptr if they are not
+                for (int i=0;i<4;i++){
+                    if (moves[i]==CurrPos){
+                        moves[i]=nullptr;
+                    }
+                }
+                
+                //checks if any of the moves are assigned to an address that is not in the array
+                for (int i=0;i<4;i++){
+                    if (moves[i]!=nullptr){
+                        for (int j=0;j<3;j++){
+                            for (int k=0;k<3;k++){
+                                if (moves[i]==arr[j][k]){
+                                    moves[i]=arr[j][k];
+                                }
+                            }
+                        }
+                    }else{
+                        moves[i]=nullptr;
+                    }
                 }
             }
         }
