@@ -65,11 +65,8 @@ int main(){
         if (CurrPos==0){
             cout<<"You escaped!"<<endl;
             break;}
-
     }
     return 0;
-
-
 }
 
 int* ConvertStringToAddress(string TextAddress){
@@ -82,6 +79,9 @@ int* ConvertStringToAddress(string TextAddress){
 }
 
 void Move(int* AddressToGo){
+    for (int i =0; i<10; i++){
+        cout<<""<<endl;
+    }
     cout<<"You were at: "<<CurrPointer<<endl;
     CurrPointer=AddressToGo;
     cout<<"You are now at: "<<CurrPointer<<endl;
