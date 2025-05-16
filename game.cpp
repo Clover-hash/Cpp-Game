@@ -174,7 +174,7 @@ array<int*,4> CheckAvailableMoves(int* CurrPos,array<array<int*,3>,3> arr){
                         moves[2]=arr[i][j-1]; //left
                         moves[3]=arr[i][j+1]; //right
                     }catch (out_of_range& e){
-                        e.what();
+                        (void)e.what();
                         //catch the out of range error and set the move to nullptr
                         if (t==0){
                             moves[0]=nullptr; //up
